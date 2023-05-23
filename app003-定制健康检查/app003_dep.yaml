@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app003
+  namespace: cistest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app003
+  template:
+    metadata:
+      labels:
+        app: app003
+    spec:
+      containers:
+      - image: nginxdemos/nginx-hello:plain-text
+        imagePullPolicy: IfNotPresent
+        name: app003
+        ports:
+        - containerPort: 80
+          protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app003-2
+  namespace: cistest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app003-2
+  template:
+    metadata:
+      labels:
+        app: app003-2
+    spec:
+      containers:
+      - image: nginxdemos/nginx-hello:plain-text
+        imagePullPolicy: IfNotPresent
+        name: app003-2
+        ports:
+        - containerPort: 80
+          protocol: TCP
+
