@@ -1,0 +1,48 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app001
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app001",
+            "label": "http",
+            "remark": "app001 Template",
+            "app001": {
+                "class": "Tenant",
+                "app001": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app001": {
+                        "class": "Service_HTTP",
+                        "remark": "app001",
+                        "virtualAddresses": [
+                            "192.168.179.1"
+                        ],
+                        "virtualPort": 80,
+                        "pool": "pool_001"
+                    },
+                    "pool_001": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 80,
+                                "serverAddresses": []
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
