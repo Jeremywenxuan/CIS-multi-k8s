@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app103-apple
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app103-apple
+  template:
+    metadata:
+      labels:
+        app: app103-apple
+    spec:
+      containers:
+      - name: app103-apple
+        image: nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app103-apple-svc
+  namespace: demo
+  labels:
+    cis.f5.com/as3-tenant: app103-apple-C2
+    cis.f5.com/as3-app: app103-apple
+    cis.f5.com/as3-pool: app103-apple
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: app103-apple
