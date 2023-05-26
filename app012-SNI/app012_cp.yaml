@@ -1,0 +1,73 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app012
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app012",
+            "label": "https",
+            "remark": "app012 Template",
+            "app012": {
+                "class": "Tenant",
+                "app012": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app012": {
+                        "class": "Service_HTTPS",
+                        "remark": "app012",
+                        "virtualAddresses": [
+                            "192.168.179.12"
+                        ],
+                        "virtualPort": 443,
+                        "serverTLS": "frontside",
+                        "redirect80": false,
+                        "pool": "pool_012"
+                    },
+                    "pool_012": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 80,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "frontside": {
+                      "class": "TLS_Server",
+                        "certificates": [{
+                            "matchToSNI": "www.testcert1.com",
+                            "certificate": "webcert1"
+                          },
+                          {
+                            "matchToSNI": "www.testcert2.com",
+                            "certificate": "webcert2"
+                          }]
+                     },
+                     "webcert1":{
+                       "class": "Certificate",
+                       "remark": "webcert1",
+                       "certificate": "-----BEGIN CERTIFICATE-----\nMIIDVDCCAjygAwIBAgIEFBG5pDANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJD\nTjELMAkGA1UECBMCV0ExEDAOBgNVBAcTB1NlYXR0bGUxEjAQBgNVBAoTCU15Q29t\ncGFueTEOMAwGA1UECxMFTXlPcmcxGjAYBgNVBAMTEXd3dy50ZXN0Y2VydDEuY29t\nMB4XDTIwMDkwMjA5MjU1NloXDTIxMDkwMjA5MjU1NlowbDELMAkGA1UEBhMCQ04x\nCzAJBgNVBAgTAldBMRAwDgYDVQQHEwdTZWF0dGxlMRIwEAYDVQQKEwlNeUNvbXBh\nbnkxDjAMBgNVBAsTBU15T3JnMRowGAYDVQQDExF3d3cudGVzdGNlcnQxLmNvbTCC\nASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANssSuo0BqtTXLbG2AgAbaAE\nMRyJzf/pyQr33M3bgEAiPgFzA1SwTo7BH8DqYXVMJrBAYaHCn52qpa5yb0TPZv9z\nR6MpRRZ9vjuotrPQALn8f+qvGYp3nNjCyQYRB+SaR9OhpAIBRy8/cTpG60cq+oIS\nuD8nb2jChe5djcXjHkvBMNFTMQbmpU3zs2i7757aTTc2rJawc8T1wcjfjINDx/Km\n9qzgza1e8njI6Tw+XB8aGH2ZrbJK1FrVnkj8Qbn1t9hOLgQutiZlsWIHuJYDCNXu\nMcusnRapjrzUOHEsy29CJbP6eBOgf9jEuA4CgdVYkPmwWOGt8jC5F9WVBfBXPGEC\nAwEAATANBgkqhkiG9w0BAQsFAAOCAQEA005YvyDTESMrHU8B8V++e1Kf3tFzWv+C\n7l+U/jd1wTmbL8MzkhTzVK/1NBl4zAn5PlinVaOss/hYcBUMJ/4nGwwmqL2IgBOe\nrLNUaeBJYIlsCgXKv2k2oODVBAmjUMfHBT8A3ulnvRIHaeKHbmLf5k9ulqySfaO5\n6DOj6vylz1FjCSK1ZMNYt+fbxbHxzxGPnRk+dr+J/nCt7D9nodL/uOGeC6wW+6jk\nEjbTHlQ+SQdvSJHGIzH1gUGh4Qlz0tVzrdTCLIV6hPRH2QQ6ZG9hnqKZw7ey6ZxT\nipYYYSORnqorlM2JLv3ImoR6wuBt5mvsC5qKIZcUbFdwPhYmMcBv2A==\n-----END CERTIFICATE-----",
+                       "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDbLErqNAarU1y2\nxtgIAG2gBDEcic3/6ckK99zN24BAIj4BcwNUsE6OwR/A6mF1TCawQGGhwp+dqqWu\ncm9Ez2b/c0ejKUUWfb47qLaz0AC5/H/qrxmKd5zYwskGEQfkmkfToaQCAUcvP3E6\nRutHKvqCErg/J29owoXuXY3F4x5LwTDRUzEG5qVN87Nou++e2k03NqyWsHPE9cHI\n34yDQ8fypvas4M2tXvJ4yOk8PlwfGhh9ma2yStRa1Z5I/EG59bfYTi4ELrYmZbFi\nB7iWAwjV7jHLrJ0WqY681DhxLMtvQiWz+ngToH/YxLgOAoHVWJD5sFjhrfIwuRfV\nlQXwVzxhAgMBAAECggEAEfI3QySV7Dbj91JiU4tnbowRUmclP0BvFg8UHSYNQxMa\ntScr/WX/VLiTB0qZxs9Atrta0zI6vCACN33GxyFda2rO0ZkaP1x19HAc363XNWNr\nvPVv97LSHLycVbsUxJ7uZTGN2p0srT16Yb13W+k0wGxUelVaDb+p1EoERxERBL5K\nvtgMbcoSsfGRhDzWA2iPwrvHRtJoTs4PFl2z7K6Q4orPRmZimzO9Icw1UdqvBpvS\ntf6HiA0WysPD02t7IOrTJIkwJerAMWkJsMdJM8ekRdhcZ8cIDjF4CVNO64SXEOP5\nN+7dWD+z+ZVB/efmCQYSv7ReaMLAoJNOWNhhqCdnbQKBgQD/9qghHCxlbw8G3xRU\ncV3EzoAV3VYuxvwYhGEfh2ghrCIe7xiWP19cgLvm/AmjaV8GWdYcJxz5ASj1gMtX\nv59Ds5D0gLkqwwhxMek6anqthwRBpSxI6N4vM5c9nGFahUP28tBGLq6B7/JmxPRF\nxFU+xFnl0DKi26vDuF7QpoemvQKBgQDbNEr+duLrUt1mmULveUNfnl5C7KazFh7g\nbkIWkhhgIZXk7xD0jeKQnLzw+njf6PAdupwB6Qi5vJzyq0psFnZdqDAgbWNjJAxH\nFAiYz3ry6swcMyuNVNQOe3Jf3jRCFHwYpcEG0py1G+pADkysDxl9wBJhUM2YbOVn\nF/0wH1yodQKBgGx7ncZqqmZTK4s+AN/JLHS9EIwzwtMQgsfhU0iJmxiqW8vAiisj\nsMcDyJ+dMniPsDaA3L4R1bWzSCjE7WnDTTzkXgtCgzgccPeIr9CSUGw7TRKFbr93\n8rMOqoryPFChKqz/PEaCgnOPvqzPzLfE/lwb2/4Kv2tGrwXEnmrQKa4BAoGBAKCJ\nmsbkUOphhM6IPjJeUA5uUMCYyrlr4O8jMPmQw5Nb5YiF4ZgJdb3NXL7r4ayyz3Am\nY+0uOvq0fQlok5e3l7ad36lQE7LfCrLfpDAt+/B+L0AT5bibQLbeh/RYK1Od5wiy\nFD0n8Cbfq95/2n1Ejbm/+nYVFI2maxfmxMICpfylAoGBALBD+nV4jFDqG56q0zlg\nOtIGI+ls/e6x9IRXE9fKBS6Ua2+TxNCkoXuehbjnhh95YsxtqhWor/2V58abhQnm\nnJ9np9V9lXxzY8AXLrexFlYL7X5rJy+AhRlOBmI3HuOS53ij89o1P8y+KoMz/NyN\n9olbg29yw22zACd7Dgdrw2Em\n-----END PRIVATE KEY-----"
+                     },
+                     "webcert2":{
+                       "class": "Certificate",
+                       "remark": "webcert2",
+                       "certificate": "-----BEGIN CERTIFICATE-----\nMIIDVDCCAjygAwIBAgIEFBG5rTANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJD\nTjELMAkGA1UECBMCV0ExEDAOBgNVBAcTB1NlYXR0bGUxEjAQBgNVBAoTCU15Q29t\ncGFueTEOMAwGA1UECxMFTXlPcmcxGjAYBgNVBAMTEXd3dy50ZXN0Y2VydDIuY29t\nMB4XDTIwMDkwMjA5MjYwNVoXDTIxMDkwMjA5MjYwNVowbDELMAkGA1UEBhMCQ04x\nCzAJBgNVBAgTAldBMRAwDgYDVQQHEwdTZWF0dGxlMRIwEAYDVQQKEwlNeUNvbXBh\nbnkxDjAMBgNVBAsTBU15T3JnMRowGAYDVQQDExF3d3cudGVzdGNlcnQyLmNvbTCC\nASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJWFYVLlEixkil/8H6z7Nni4\nBHkKnDCy9l/myvwtzW9hhxrkRiOq8kD1gPGFqt8F/Z0FGdR0is/aIFyNDBgepk1A\nMWktLqfIkbD/ztkMiQQRKl9CxJ2QPCK5WAXv2cr6Tp+/GOAL5cEz1BPPDtHKcpzI\nGO8p1l1+maW4H0uCZGUm34o3MXseHhXLXgk8p1O5wgXzhIvcAjd76yHvztGlRKwh\nqISmJEqRnBET5+BbE6au1ZM2iOLUca07Rtgll4A31pRRuVTAaX7BlcDGO3pxIZfd\nO3cg0bkXubzVgcWPHrso2yqlA2072rBvCKDxr7wkNNcIeqGOLhEJmQ9wWomvgwUC\nAwEAATANBgkqhkiG9w0BAQsFAAOCAQEABUOrL0Jwc3g11AV630+iJ2LOmvg/58bY\nChvp2cfL8rZgpbUqs3Y+o6Jd2PqSpWtxXlgrHLR46ZVyGyX6saiRg0MzYSiEIuru\n4B9zfPQKgK8YXD8TjVteiHszD2M84/0B7czTmkbC2lMif4cNPX01yQtI/di39KLX\nla7Xr+RY2kE75tYOncqKRO+m1SVFS4Rk5bDYtzHERiI3JxcuxTmEP8s9hT3ASWz2\nQ5jVXPzqOI1BmwItTsNCruVi0RI3csl9m6OlT4c7Wcfg2P/HF0q/VHKvIILoanfE\nLmofGvNvHO0F12/JF/TOqEkHsVAW+4upbFvKzOan2UHn4SNqJav6wg==\n-----END CERTIFICATE-----",
+                       "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCVhWFS5RIsZIpf\n/B+s+zZ4uAR5CpwwsvZf5sr8Lc1vYYca5EYjqvJA9YDxharfBf2dBRnUdIrP2iBc\njQwYHqZNQDFpLS6nyJGw/87ZDIkEESpfQsSdkDwiuVgF79nK+k6fvxjgC+XBM9QT\nzw7RynKcyBjvKdZdfpmluB9LgmRlJt+KNzF7Hh4Vy14JPKdTucIF84SL3AI3e+sh\n787RpUSsIaiEpiRKkZwRE+fgWxOmrtWTNoji1HGtO0bYJZeAN9aUUblUwGl+wZXA\nxjt6cSGX3Tt3ING5F7m81YHFjx67KNsqpQNtO9qwbwig8a+8JDTXCHqhji4RCZkP\ncFqJr4MFAgMBAAECggEAEM/GLVyhwjmMwHWX9ypoycKBCD4L6ULaBlbsGFYrDNy1\npO2pQD3qjqi79owNthVVmnfWG2f+KpgvPtDCHR0nHDT9SULiBc38qZ7dmlR5PGqU\nrdDTTBcJV+sojURWY+boe7gwGxLjYqmJ7S9BDpAZemzaNtvopSsEqhgtdp9C3AeK\niNan8qc63uQmeYSa/486wY/JTF3xTHAxiCsHE4Arv6UeziY6EXRoIHIQeqDWygpb\nn7yJz63LmU1tcHKS7UEPTGEnLGh1oCLRMwx/12kKtnliuByb6JoV1RBL0Sk+iiWS\npl9gPd6MHTgQM5ohoEfvZxX9jMgeSWDk70U+fdPZuQKBgQDS1qPzbiYLJ8EZUsOg\nLsx6frTyqCQwQ7YKfP0wVGjqwGxobtVXt31oA0w7EawGAGN+lXlSPW7xVCNNAqM1\no2mN6f22BBIpZc7LKUbEI3VWHg3uOVamInl+9m0txwXmV3GsZVGV1VFuKnvkhD9J\nAvSpd/bZsi0+6pF7dI/1czuyrQKBgQC1jGOX6mmiPgFTwjQv/FCnlioRlaVd4ruN\nPDoHsY5mzH0i28DLDpXLVM+FP2iFzELtPEAd9qlQv8DYUloLFa+8WOniljO750mm\nfdWlUrJzn4kQwcB6C1TrRedWeJjze+IGmmJ+QIXJoR631cc/LqBnYyeZChJNtSDK\nip69+Il0uQKBgQDD3OX99Kue3VWDguF84zzN5vuOGSlVNPHeGHLU/PVib1PGSIAk\ntq7ne3jLvwUBpkbHh3BnN+7iffk1R2f7Ik2iqmcpOertTkinbzbwashMMitazSVz\nvL8FdUPDrQoMC9vr/UunV74IC6uAhGKOHxLOhEVrwxxJQHvaJlS9/kjNGQKBgHG9\ngcv0dbfKxwQVwKJrnpBQGQ0pRxBZ84zZtbWKPSAUbzW+nbvZ6GkaOmVNw4tH3IpK\n3BSpq4xGhmhAt98H+DC1N9rYpZLMpazkW0yXUev0gGf6Kz+LB+nawsO/DHxHGeVv\nJdPZUrhu9BLSoWDpMl9zlKRh1fPPTbr3O9ri8iMpAoGBAJkO6sN/ie7ozkWANq8g\ncdLW4z8TboTHX/Js0gZJCwa70wfV8bhxyaOyLamx4uNnLf3YFc34ZyA6QC+IQtat\nlazGNNoSWOAb75UL4iBvzIB/D5XND7q4qidEgFCsP1VRim5D9s43ApPVfx6qzN0V\nIzUQ60ZtnCHazGTNso7OtC0E\n-----END PRIVATE KEY-----"
+                    }
+                }
+            }
+        }
+    }
