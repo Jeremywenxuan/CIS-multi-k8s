@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app013
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app013
+  template:
+    metadata:
+      labels:
+        app: app013
+    spec:
+      containers:
+      - image: nginxdemos/nginx-hello:plain-text
+        imagePullPolicy: IfNotPresent
+        name: app013
+        ports:
+        - containerPort: 80
+          protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app013-2
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app013-2
+  template:
+    metadata:
+      labels:
+        app: app013-2
+    spec:
+      containers:
+      - image: nginxdemos/nginx-hello:plain-text
+        imagePullPolicy: IfNotPresent
+        name: app013-2
+        ports:
+        - containerPort: 80
+          protocol: TCP
+
+

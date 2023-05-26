@@ -1,0 +1,65 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app013
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app013",
+            "label": "http",
+            "remark": "app013 Template",
+            "app013": {
+                "class": "Tenant",
+                "app013": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app013": {
+                        "class": "Service_HTTP",
+                        "iRules": ["iRules_013"],
+                        "remark": "app013",
+                        "virtualAddresses": [
+                            "192.168.179.13"
+                        ],
+                        "virtualPort": 80
+                    },
+                    "pool_013": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 80,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "pool_013_2": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 80,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "iRules_013": {
+                      "class": "iRule",
+                      "remark": "switch between pools",
+                      "iRule": "when HTTP_REQUEST {\n if { [HTTP::uri] contains \"foo\" } {\n pool pool_013 \n HTTP::respond 301 Location \"/ \" \n } else { \n pool pool_013_2 \n }\n  \n}" 
+                  }
+                }
+            }
+        }
+    }
