@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app015
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app015
+  template:
+    metadata:
+      labels:
+        app: app015
+    spec:
+      containers:
+      - image: nginxdemos/nginx-hello:plain-text
+        imagePullPolicy: IfNotPresent
+        name: app015
+        ports:
+        - containerPort: 80
+          protocol: TCP
+
