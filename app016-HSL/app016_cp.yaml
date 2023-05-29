@@ -1,0 +1,54 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app016
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app016",
+            "label": "http",
+            "remark": "app016 Template",
+            "app016": {
+                "class": "Tenant",
+                "app016": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app016": {
+                        "class": "Service_HTTP",
+                        "iRules": ["iRules_HSL"],
+                        "remark": "app016",
+                        "virtualAddresses": [
+                            "192.168.179.16"
+                        ],
+                        "virtualPort": 80,
+                        "pool": "pool_016"
+                    },
+                    "pool_016": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 80,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "iRules_HSL": {
+                      "class": "iRule",
+                      "remark": "HSL",
+                      "iRule": "when HTTP_REQUEST { \n set TIME_HTTP_REQUEST [clock clicks -milliseconds] \n if { [HTTP::header X-Forwarded-For] ne "" } { set REAL_IP [HTTP::header X-Forwarded-For] } \n else { set REAL_IP [IP::client_addr] } \n set REAL_ISP [whereis $REAL_IP isp] \n set HTTP_HOSTNAME [HTTP::host] \n set HTTP_PATH [HTTP::path] \n set HTTP_METHOD [HTTP::method] \n set HTTP_HEADER_User_Agent [HTTP::header "User-Agent"] \n set HTTP_HEADER_VERSION [HTTP::version] \n HSL::send $BigDataServer "SERVER_NAME:$SERVER_NAME|REAL_IP:$REAL_IP|HTTP_HOSTNAME:$HTTP_HOSTNAME|HTTP_PATH:$HTTP_PATH|HTTP_METHOD:$HTTP_METHOD|HTTP_HEADER_User_Agent:$HTTP_HEADER_User_Agent|HTTP_HEADER_VERSION:$HTTP_HEADER_VERSION|REAL_ISP:$REAL_ISP" \n }" 
+                  }
+                }
+            }
+        }
+    }
