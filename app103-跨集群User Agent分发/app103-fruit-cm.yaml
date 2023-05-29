@@ -1,0 +1,47 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app103
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+      "class": "AS3",
+      "declaration": {
+          "class": "ADC",
+          "schemaVersion": "3.18.0",
+          "label": "http",
+          "id": "app103",
+          "app103": {
+              "class": "Tenant",
+              "app103-apple": {
+                  "class": "Application",
+                  "template": "generic",
+                  "app103-apple_vs": {
+                      "class": "Service_HTTP",
+                      "virtualAddresses": [ "192.168.179.103" ],
+                      "persistenceMethods": [],
+                      "iRules": ["Useragent"]
+                  },
+                  "app103-apple": {
+                      "class": "Pool",
+                      "monitors": [ "http" ],                      
+                      "loadBalancingMode": "least-connections-member",
+                      "members": [
+                          {
+                              "servicePort": 80,
+                              "serverAddresses": []
+                          }
+                      ]
+                  },
+                  "Useragent": {
+                      "class": "iRule",
+                      "iRule": "when HTTP_REQUEST { \n if { [HTTP::header User-Agent] contains "Chorm" } { \n pool /app103/app103-apple/app103-apple \n } else { \n pool /app103-apple-C2/app103-apple/app103-apple \n } \n }" 
+                  }
+               }
+            }
+        }
+    }
