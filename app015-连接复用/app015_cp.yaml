@@ -1,0 +1,55 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app015
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app015",
+            "label": "http",
+            "remark": "app015 Template",
+            "app015": {
+                "class": "Tenant",
+                "app015": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app015": {
+                        "class": "Service_HTTP",
+                        "remark": "app015",
+                        "virtualAddresses": [
+                            "192.168.179.15"
+                        ],
+                        "profileMultiplex": {
+                          "use": "custoOneConnectProfile"
+                        },
+                        "virtualPort": 80,
+                        "pool": "pool_015"
+                    },
+                    "pool_015": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "custoOneConnectProfile": {
+                      "class": "Multiplex_Profile",
+                      "sourceMask": "255.255.255.255"
+                    }
+                }
+            }
+        }
+    }

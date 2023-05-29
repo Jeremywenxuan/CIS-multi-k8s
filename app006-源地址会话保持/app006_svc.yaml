@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app006
+  namespace: demo
+  labels:
+    app: app006
+    cis.f5.com/as3-tenant: app006
+    cis.f5.com/as3-app: app006
+    cis.f5.com/as3-pool: pool_006
+spec:
+  ports:
+  - name: app006
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: ClusterIP
+  selector:
+    app: app006
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app006-2
+  namespace: demo
+  labels:
+    app: app006-2
+    cis.f5.com/as3-tenant: app006
+    cis.f5.com/as3-app: app006
+    cis.f5.com/as3-pool: pool_006_2
+spec:
+  ports:
+  - name: app006-2
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: ClusterIP
+  selector:
+    app: app006-2

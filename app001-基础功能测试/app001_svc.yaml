@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app001
+  namespace: demo
+  labels:
+    app: app001
+    cis.f5.com/as3-tenant: app001
+    cis.f5.com/as3-app: app001
+    cis.f5.com/as3-pool: pool_001
+spec:
+  ports:
+  - name: app001
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: ClusterIP
+  selector:
+    app: app001

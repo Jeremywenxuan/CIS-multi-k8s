@@ -1,0 +1,54 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app010
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app010",
+            "label": "http",
+            "remark": "app010 Template",
+            "app010": {
+                "class": "Tenant",
+                "app010": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app010": {
+                        "class": "Service_HTTP",
+                        "iRules": ["iRules_app010"],
+                        "remark": "app010",
+                        "virtualAddresses": [
+                            "192.168.179.10"
+                        ],
+                        "virtualPort": 80
+                    },
+                    "pool_010": {
+                        "class": "Pool",
+                        "monitors": [
+                            "tcp"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "iRules_app010": {
+                      "class": "iRule",
+                      "remark": "switch between pools",
+                      "iRule":  "when HTTP_REQUEST {\n  if {[HTTP::host] equals \"www.mysite.com\" } {\n pool pool_010 \n  } elseif {\n [HTTP::host] equals \"www.yoursite.com\" }  {\n pool pool_010_2 \n  } \n}"
+                   }
+                }
+            }
+        }
+    }
+

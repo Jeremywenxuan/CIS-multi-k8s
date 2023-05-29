@@ -1,0 +1,54 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app008
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app008",
+            "label": "http",
+            "remark": "app008 Template",
+            "app008": {
+                "class": "Tenant",
+                "app008": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app008": {
+                        "class": "Service_HTTP",
+                        "iRules": ["iRules_Tcpoption"],
+                        "remark": "app008",
+                        "virtualAddresses": [
+                            "192.168.179.8"
+                        ],
+                        "virtualPort": 80,
+                        "pool": "pool_008"
+                    },
+                    "pool_008": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "iRules_Tcpoption": {
+                      "class": "iRule",
+                      "remark": "TCP Option",
+                      "iRule": "when SERVER_INIT { \n scan [IP::client_addr] {%d.%d.%d.%d} a b c d \n scan [TCP::client_port] {%d} p \n TCP::option set 200 [binary format Scccc $p $a $b $c $d] all \n }" 
+                  }
+                }
+            }
+        }
+    }

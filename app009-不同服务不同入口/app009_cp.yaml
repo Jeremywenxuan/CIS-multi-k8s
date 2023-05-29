@@ -1,0 +1,83 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app009
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+      "class": "AS3",
+      "declaration": {
+          "class": "ADC",
+          "schemaVersion": "3.18.0",
+          "label": "http",
+          "id": "pingan_cis_test",
+          "Cafe": {
+              "class": "Tenant",
+              "tea": {
+                    "class": "Application",
+                    "template": "generic",
+                    "tea_vs": {
+                        "class": "Service_L4",
+                        "virtualAddresses": [ "192.168.179.9" ],
+                        "virtualPort": 80,
+                        "persistenceMethods": [ "source-address" ],
+                        "pool": "tea"
+                    },
+                    "tea": {
+                        "class": "Pool",
+                        "monitors": [ "http" ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    }
+              },  
+              "coffee": {
+                  "class": "Application",
+                  "template": "generic",
+                  "coffee_vs": {
+                      "class": "Service_HTTP",
+                      "persistenceMethods": [ "cookie" ],
+                      "virtualAddresses": [ "192.168.179.99" ],
+                      "profileTCP": { "use": "tcp_profile_600" },
+                      "profileHTTP": { "use": "http_profile_XFF" },
+                      "pool": "coffee"
+                  },
+                  "coffee": {
+                      "class": "Pool",
+                      "monitors": [
+                          { "use": "my_http_monitor" }
+                      ],
+                      "loadBalancingMode": "least-connections-member",
+                      "members": [
+                          {
+                              "servicePort": 8080,
+                              "serverAddresses": []
+                          }
+                      ]
+                  },
+                  "tcp_profile_600": {
+                     "class": "TCP_Profile",
+                     "idleTimeout": 600
+                  },
+                  "http_profile_XFF": {
+                     "class": "HTTP_Profile",
+                     "xForwardedFor": true
+                  },
+                  "my_http_monitor": {
+                      "class": "Monitor",
+                      "monitorType": "http",
+                      "send": "GET / HTTP/1.1\r\nCONNECTION:CLOSE\r\nHost:coffee",
+                      "receive":"Server address",
+                      "interval": 5
+                  }
+               }            
+            }
+        }
+    }

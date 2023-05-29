@@ -1,0 +1,55 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app014
+  namespace: demo
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "app014",
+            "label": "http",
+            "remark": "app014 Template",
+            "app014": {
+                "class": "Tenant",
+                "app014": {
+                    "class": "Application",
+                    "template": "generic",
+                    "app014": {
+                        "class": "Service_HTTP",
+                        "remark": "app014",
+                        "virtualAddresses": [
+                            "192.168.179.14"
+                        ],
+                        "profileMultiplex": {
+                          "use": "custoOneConnectProfile"
+                        },
+                        "virtualPort": 80,
+                        "pool": "pool_014"
+                    },
+                    "pool_014": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    },
+                    "custoOneConnectProfile": {
+                      "class": "Multiplex_Profile",
+                      "sourceMask": "255.255.255.255"
+                    }
+                }
+            }
+        }
+    }
