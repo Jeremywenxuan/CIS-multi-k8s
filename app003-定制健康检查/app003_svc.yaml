@@ -11,9 +11,9 @@ metadata:
 spec:
   ports:
   - name: app003
-    port: 80
+    port: 8080
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
   type: ClusterIP
   selector:
     app: app003
@@ -31,9 +31,9 @@ metadata:
 spec:
   ports:
   - name: app003-2
-    port: 80
+    port: 8080
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
   type: ClusterIP
   selector:
     app: app003-2
