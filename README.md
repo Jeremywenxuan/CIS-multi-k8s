@@ -2,6 +2,22 @@
 ## 项目说明
 测试验证F5 CIS在多个K8S集群场景下进行请求调度的能力，同时验证cilium CNI以及CIS HUB的能力。
 
+## 部署架构
+<img width="415" alt="image" src="https://github.com/liaojianxiong/CIS-multi-k8s/assets/8012953/94d5551f-150b-43da-b87c-e9e11518a87e">
+
+部署一个F5 BIGIP VE实例对应两个K8S集群，VE以VTEP的形式接入cilium。CIS与cilium的对接可参考：https://github.com/f5devcentral/f5-ci-docs/blob/master/docs/cilium/cilium-bigip-info.rst
+
+F5上分别配置一个与各K8S集群Node同网段的接口地址用于建立Cilium通信；另外部署业务发布网段（即VS网段），用于对外进行业务发布，供客户端访问。
+每个k8s集群中各部署一个bigip-ctlr，该Pod会通过监听k8s APIServer事件的形式读取集群中的NS/Pod/Service等配置信息，并自动配置到BIGIP VE上。
+
+# 配置要点
+helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.enabled=true --set hubble.ui.enabled=true --set prometheus.enabled=true --set operator.prometheus.enabled=true --set hubble.enabled=true --set kubeProxyReplacement=strict --set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,http}" --set vtep.endpoint="55.32.170.41" --set vtep.cidr="100.64.1.1/24" --set vtep.mask="255.255.255.0" --set vtep.mac="00:50:56:3d:a9:46" --set vtep.enabled="true" --set ipam.mode="kubernetes"
+
+这里 vtep.endpoint 是BIGIP VE underlay 接口IP, vtep.mac 是tunnel Mac 地址，在bigip上通过show net tunnels tunnel cilium-vxlan-tunnel-mp all-properties 查询
+
+另外在cis配置上，需要增加一个"--flannel-name=cilium-vxlan-tunnel-mp” ，原因是cis复用了flannel相关代码来实现cilium overlay
+
+
 ## 单集群测试项
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
