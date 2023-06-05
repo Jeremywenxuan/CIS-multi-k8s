@@ -1,6 +1,6 @@
 # CIS-multi-k8s
 ## 项目说明
-测试验证F5 CIS在多个K8S集群场景下进行请求调度的能力，同时验证cilium CNI以及CIS HUB的能力。
+测试验证F5 CIS在多K8S集群场景下进行请求调度的能力，同时验证cilium CNI以及CIS HUB的能力。
 
 ## 部署架构
 <img width="415" alt="image" src="https://github.com/liaojianxiong/CIS-multi-k8s/assets/8012953/94d5551f-150b-43da-b87c-e9e11518a87e">
@@ -67,11 +67,13 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 ## 多集群
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
-| app101 | 流量分发| 同一个入口，按照比率将流量分发到不同k8s集群 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，按照比率分发到不同的K8S集群中 |
-| app102 | 流量分发	| 同一个入口，基于Host分发海量svc | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，按照Host分发到不同的K8S集群中 | 
-| app103 | 灰度发布	| 按比例对特定User Agent进行灰度发布 |	svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，针对特定User Agent按照比率分发到不同的K8S集群中 |
-|  app104	| 灰度发布 | 根据Header对特定IP地址段进行灰度发布 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，针对特定IP地址段根据不同的Header分发到不同的K8S集群中 | 
+| app101 | 流量分发| 同一个入口，按照比率将流量分发到不同k8s集群 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，按照比率分发到不同的K8S集群的svc上 |
+| app102 | 流量分发	| 同一个入口，基于Host分发流量 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，按照Host分发到不同的K8S集群中对应的svc上 | 
+| app103 | 灰度发布	| 按比例对特定User Agent进行灰度发布 |	svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，针对特定User Agent按照比率分发到不同的K8S集群对应的svc上 |
+| app104	| 灰度发布 | 根据Header对特定IP地址段进行灰度发布 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，针对特定IP地址段根据不同的Header分发到不同的K8S集群对应的svc上 | 
 | app105	| 灰度发布 |  根据Cookie内容进行灰度发布 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，根据Cookie内容的不同分发到不同的K8S集群中 |
+| app106	| 流量分发 |  同一个入口，基于Path分发流量 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，根据Path不同分发到不同的K8S集群对应的svc上 |
+
 
 ## 扩容测试
 | 序号 | 测试项 | 测试内容 | 说明 |
