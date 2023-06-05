@@ -83,7 +83,8 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 ## 扩容测试
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
-| app301 | 基于namespace扩容 | 基于namespace扩容 | 不同namespace配置到不同的bigip上，实现bigip的扩容 |
+| app301 | CIS扩容 | 按需扩容CIS | 原本一个CIS监听所有namespace（假设为ns1和ns2），把配置写入到bigip上。新增一个CIS实例监听ns2，原CIS实例监听ns1，配置写入相同bigip上 |
+| app301 | BIGIP扩容 | 按需扩容BIGIP | 原本两个CIS监听所有namespace（假设为ns1和ns2），把配置写入到同一个bigip上。扩容bigip2，调整cis2 配置写入到bigip2上 |
 
 ## 配置容量测试
 | 序号 | 测试项 | 测试内容 | 说明 |
