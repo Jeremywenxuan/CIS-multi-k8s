@@ -74,24 +74,29 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 | app105	| 灰度发布 |  根据Cookie内容进行灰度发布 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，根据Cookie内容的不同分发到不同的K8S集群中 |
 | app106	| 流量分发 |  同一个入口，基于Path分发流量 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，根据Path不同分发到不同的K8S集群对应的svc上 |
 
+## 多集群-Hub模式
+| 序号 | 测试项 | 测试内容 | 说明 |
+| -----|------ | ----------|---- |
+| app201	| 流量分发 |  同一个入口，基于Path分发流量 | svc1在k8s集群1上，svc2在k8s集群2上，通过同一个入口进行发布，根据Path不同分发到不同的K8S集群对应的svc上 |
+
 
 ## 扩容测试
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
-| app201 | 基于namespace扩容 | 基于namespace扩容 | 不同namespace配置到不同的bigip上，实现bigip的扩容 |
+| app301 | 基于namespace扩容 | 基于namespace扩容 | 不同namespace配置到不同的bigip上，实现bigip的扩容 |
 
 ## 配置容量测试
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
-| app301 | datagroup的配置容量	| 验证datagroup的配置容量	| 在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
-| app302	| VS的配置容量   | 验证VS的配置容量 |	在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
-| app303	| Pool的配置容量 | 验证Pool的配置容量 | 在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
+| app401 | datagroup的配置容量	| 验证datagroup的配置容量	| 在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
+| app402	| VS的配置容量   | 验证VS的配置容量 |	在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
+| app403	| Pool的配置容量 | 验证Pool的配置容量 | 在N条记录基础上，增加1条，验证CIS是否能够在可接受的时间内发布到bigip上 |
 
 ## 高可用测试
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
-|  app401	| F5 HA Failover | 	验证VPC里面F5设备的主备切换 	  |   验证VPC里面F5设备的主备切换      |
-|  app402 |	CIS Controller高可用 |	CIS Controller高可用 |	验证Controller Pod故障后是否对业务有影响 |
+| app501	| F5 HA Failover | 	验证VPC里面F5设备的主备切换 	  |   验证VPC里面F5设备的主备切换      |
+| app502 |	CIS Controller高可用 |	CIS Controller高可用 |	验证Controller Pod故障后是否对业务有影响 |
 
 
 
