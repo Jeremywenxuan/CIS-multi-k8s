@@ -10,12 +10,29 @@
 F5上分别配置一个与各K8S集群Node同网段的接口地址用于建立Cilium通信；另外部署业务发布网段（即VS网段），用于对外进行业务发布，供客户端访问。
 每个k8s集群中各部署一个bigip-ctlr，该Pod会通过监听k8s APIServer事件的形式读取集群中的NS/Pod/Service等配置信息，并自动配置到BIGIP VE上。
 
-# 配置要点
+## 配置要点
+cilium安装
 helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.enabled=true --set hubble.ui.enabled=true --set prometheus.enabled=true --set operator.prometheus.enabled=true --set hubble.enabled=true --set kubeProxyReplacement=strict --set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,http}" --set vtep.endpoint="55.32.170.41" --set vtep.cidr="100.64.1.1/24" --set vtep.mask="255.255.255.0" --set vtep.mac="00:50:56:3d:a9:46" --set vtep.enabled="true" --set ipam.mode="kubernetes"
 
 这里 vtep.endpoint 是BIGIP VE underlay 接口IP, vtep.mac 是tunnel Mac 地址，在bigip上通过show net tunnels tunnel cilium-vxlan-tunnel-mp all-properties 查询
 
-另外在cis配置上，需要增加一个"--flannel-name=cilium-vxlan-tunnel-mp” ，原因是cis复用了flannel相关代码来实现cilium overlay
+在cis配置上，需要增加一项"--flannel-name=cilium-vxlan-tunnel-mp” ，原因是cis复用了flannel相关代码来实现cilium overlay
+
+## 限制说明
+
+（1）BIGIP 的underlay接口需要与k8s集群的Node保持相同网段，这样在进行pod地址的arp广播时，node节点可以接收到并响应。
+（2）两个集群中的Pod CIDR需要规划成不同网段，避免pod ip重叠导致F5上无法准确路由。
+
+## 数据流说明
+
+1.	K8S创建一个service，并进行对外发布。
+2.	CIS监听到相关事件，写入到F5上（VIP，Pool member等内容）。
+3.	客户端发起请求到VIP上，F5根据负载均衡算法或iRules规则转发到某个member上。这个member是某个集群中具体的Pod。
+4.	F5需获取member ip对应的mac地址，才能够进行tunnel封装。F5在tunnel层面广播arp请求，underlay层面会发送给每个node节点，这样每个node节点都收到该请求。
+5.	有该ip pod的Node节点响应此arp请求，其他Node不响应。
+6.	F5接收arp响应，将member ip对应的mac地址以及node ip记录到转发表中。
+7.	根据F5上路由规则以及转发表，F5封装数据包后，发送到对应Node。Node进行解封装后转给对应Pod进行处理。
+8.	Node节点根据cilium vtep的设置，可以学习到VTEP endpoint is F5 vlan self-ip地址并使用这些信息进行回包vxlan封装。
 
 
 ## 单集群测试项
