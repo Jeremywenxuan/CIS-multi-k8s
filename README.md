@@ -20,8 +20,8 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 
 ## 限制说明
 
-（1）BIGIP 的underlay接口需要与k8s集群的Node保持相同网段，这样在进行pod地址的arp广播时，node节点可以接收到并响应。
-（2）两个集群中的Pod CIDR需要规划成不同网段，避免pod ip重叠导致F5上无法准确路由。
+1.	BIGIP 的underlay接口需要与k8s集群的Node保持相同网段，这样在进行pod地址的arp广播时，node节点可以接收到并响应。
+2.	两个集群中的Pod CIDR需要规划成不同网段，避免pod ip重叠导致F5上无法准确路由。
 
 ## 数据流说明
 
