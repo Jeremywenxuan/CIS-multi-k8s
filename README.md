@@ -34,6 +34,15 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 7.	根据F5上路由规则以及转发表，F5封装数据包后，发送到对应Node。Node进行解封装后转给对应Pod进行处理。
 8.	Node节点根据cilium vtep的设置，可以学习到VTEP endpoint is F5 vlan self-ip地址并使用这些信息进行回包vxlan封装。
 
+## 跨集群业务配置逻辑说明
+1. 非Hub模式
+   在集群1上发布service，但仅发布pool，不发布vs
+   在集群2上发布相同的service，整体发布vs + pool + iRules调度逻辑。
+   
+2. Hub模式
+   在集群1上发布service，仅发布pool，不发布vs
+   在集群2上发布相同service，仅发布pool，不发布vs
+   在任意一个集群上发布vs+irules调度逻辑，vs+irules的配置可以和service配置不在同一个namespace下。以方便用户根据不同组织架构进行灵活管理。
 
 ## 单集群测试项
 | 序号 | 测试项 | 测试内容 | 说明 |
