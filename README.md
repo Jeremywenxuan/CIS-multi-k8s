@@ -64,6 +64,8 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 | app015	| 连接复用 | OneConnection | 通过YAML配置OneConnection，可减少后端Pod上的连接数 |
 | app016	| 高速日志输出构建流量可视化 | F5与ELK结合 | 通过F5 HSL能够将容器内应用访问流量做可视化输出，结合第三方数据平台进行数据展示---HSL iRule |
 
+更多单集群测试项，可以参考kylin的github： https://github.com/cloudadc/cis-scripts/tree/cis-hub
+
 ## 多集群
 | 序号 | 测试项 | 测试内容 | 说明 |
 | -----|------ | ----------|---- |
