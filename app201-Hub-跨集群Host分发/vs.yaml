@@ -27,7 +27,7 @@ data:
                   },
                   "url_switch": {
                       "class": "iRule",
-                      "iRule": "when HTTP_REQUEST { \n set dpool [class match -value [HTTP::host] equals gardenpool] \n if { [info exists dpool ]} {  pool $dpool } }"
+                      "iRule": "when HTTP_REQUEST { \n set dpool [class match -value [string tolower [HTTP::host]] equals gardenpool] \n if { [info exists dpool ]} {  pool $dpool } }"
                   },
                   "gardenpool": {
                       "class": "Data_Group",
