@@ -1,0 +1,28 @@
+在Common下创建一个名为traffic_forward 的irules，内容如下：
+
+when RULE_INIT {
+   set ::host_match_dg_name "/garden_vs/garden/host_dg"
+   set ::ratio_dg_name "/garden_vs/garden/ratio_dg"
+}
+
+when HTTP_REQUEST { 
+    set dpool [class match -value [HTTP::host] equals $::host_match_dg_name] 
+    if { [info exists dpool ]} {  #通过host匹配到svc
+        if { $dpool contains ","}  { #双集群部署
+            set dpool_c1 [ getfield $dpool "," 1 ]
+            set dpool_c2 [ getfield $dpool "," 2 ]
+
+            #按照规则分发，比如比例
+            set ratio_value [class match -value $dpool_c1 equals $::ratio_dg_name]
+            set random_number_float [format %0.2f [expr {rand()}]] 
+          
+            if { $random_number_float < [expr {$ratio_value}] } {
+                pool $dpool_c1
+            } else {
+                pool $dpool_c2
+            }
+        } else {  #单集群部署
+            pool $dpool
+        }
+    } 
+}
