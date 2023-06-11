@@ -36,12 +36,12 @@ helm install cilium cilium/cilium --namespace kube-system --set hubble.relay.ena
 
 ## 跨集群业务配置逻辑说明
 1. 非Hub模式
-   在集群1上发布service，但仅发布pool，不发布vs
+   在集群1上发布service，但仅发布pool，不发布vs <br />
    在集群2上发布相同的service，整体发布vs + pool + iRules调度逻辑。
    
 2. Hub模式
-   在集群1上发布service，仅发布pool，不发布vs
-   在集群2上发布相同service，仅发布pool，不发布vs
+   在集群1上发布service，仅发布pool，不发布vs <br />
+   在集群2上发布相同service，仅发布pool，不发布vs <br />
    在任意一个集群上发布vs+irules调度逻辑，vs+irules的配置可以和service配置不在同一个namespace下。以方便用户根据不同组织架构进行灵活管理。
 
 ## 单集群测试项
