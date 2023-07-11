@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: garden-vs
+  namespace: garden
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+      "class": "AS3",
+      "declaration": {
+          "class": "ADC",
+          "schemaVersion": "3.18.0",
+          "label": "http",
+          "garden_vs": {
+              "class": "Tenant",
+              "garden": {
+                  "class": "Application",
+                  "template": "generic",
+                  "garden": {
+                      "class": "Service_HTTP",
+                      "persistenceMethods": [ ],
+                      "virtualAddresses": [ "10.1.10.109" ],
+                      "iRules": [
+                          { "bigip": "/Common/traffic_forward" }
+                      ]
+                  },
+                  "match_dg": {
+                      "class": "Data_Group",
+                      "keyDataType": "string",
+                      "records": [
+                         {"key": "www.rose.com", "value": "/garden_c1/garden/rose,/garden_c2/garden/rose"},
+                         {"key": "www.tulip.com", "value": "/garden_c2/garden/tulip"},
+                         {"key": "www.lily.com", "value": "/garden_c1/garden/lily,/garden_c2/garden/lily"},
+                         {"key": "www.sunflower.com", "value": "/garden_c1/garden/sunflower,/garden_c2/garden/sunflower"}
+                      ]
+                  },
+                  "method_dg": {
+                      "class": "Data_Group",
+                      "storageType": "internal",
+                      "name": "internalHostnames",
+                      "keyDataType": "string",
+                      "records": [
+                         {"key": "www.rose.com", "value": "ratio"},
+                         {"key": "www.lily.com", "value": "cookie"},
+                         {"key": "www.sunflower.com", "value": "header"}
+                      ]
+                  },
+                  "ratio_dg": {
+                      "class": "Data_Group",
+                      "storageType": "internal",
+                      "name": "internalHostnames",
+                      "keyDataType": "string",
+                      "records": [
+                         {"key": "/garden_c1/garden/rose", "value": "0.8"}
+                      ]
+                  },
+                  "cookie_dg": {
+                      "class": "Data_Group",
+                      "storageType": "internal",
+                      "name": "internalHostnames",
+                      "keyDataType": "string",
+                      "records": [
+                         {"key": "/garden_c2/garden/lily", "value": "canary"}
+                      ]
+                  },
+                  "header_dg": {
+                      "class": "Data_Group",
+                      "storageType": "internal",
+                      "name": "internalHostnames",
+                      "keyDataType": "string",
+                      "records": [
+                         {"key": "/garden_c1/garden/sunflower", "value": "User-Agent:Chrome"}
+                      ]
+                  }
+               }
+            }
+        }
+    }

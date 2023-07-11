@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rose
+  namespace: garden
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rose
+  template:
+    metadata:
+      labels:
+        app: rose
+    spec:
+      containers:
+      - name: rose
+        image: nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rose-svc
+  namespace: garden
+  labels:
+    cis.f5.com/as3-tenant: garden_c1
+    cis.f5.com/as3-app: garden
+    cis.f5.com/as3-pool: rose
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: rose
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lily
+  namespace: garden
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lily
+  template:
+    metadata:
+      labels:
+        app: lily
+    spec:
+      containers:
+      - name: lily
+        image: nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lily-svc
+  namespace: garden
+  labels:
+    cis.f5.com/as3-tenant: garden_c1
+    cis.f5.com/as3-app: garden
+    cis.f5.com/as3-pool: lily
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: lily
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sunflower
+  namespace: garden
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sunflower
+  template:
+    metadata:
+      labels:
+        app: sunflower
+    spec:
+      containers:
+      - name: sunflower
+        image: nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sunflower-svc
+  namespace: garden
+  labels:
+    cis.f5.com/as3-tenant: garden_c1
+    cis.f5.com/as3-app: garden
+    cis.f5.com/as3-pool: sunflower
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: sunflower

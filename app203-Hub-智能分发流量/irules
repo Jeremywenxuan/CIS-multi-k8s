@@ -1,0 +1,81 @@
+when RULE_INIT {
+   set ::host_match_dg_name "/garden_vs/garden/match_dg"
+   set ::method_dg_name "/garden_vs/garden/method_dg"
+   set ::ratio_dg_name "/garden_vs/garden/ratio_dg"
+   set ::cookie_dg_name "/garden_vs/garden/cookie_dg"
+   set ::header_dg_name "/garden_vs/garden/header_dg"
+}
+
+when HTTP_REQUEST { 
+    set dpool [class match -value [HTTP::host] equals $::host_match_dg_name] 
+    if { $dpool != "" } {  #通过host匹配到svc
+        if { $dpool contains ","}  { #双集群部署
+            set dpool_c1 [ getfield $dpool "," 1 ]    
+            set dpool_c2 [ getfield $dpool "," 2 ]   
+            #匹配分发方法
+            set method [class match -value [HTTP::host] equals $::method_dg_name] 
+            if { $method != ""} {  #匹配到分发方法，则根据方法进行处理
+                switch -glob $method {
+                    "ratio" {
+                        set ratio_value [class match -value $dpool_c1 equals $::ratio_dg_name]
+                        set random_number_float [format %0.2f [expr {rand()}]] 
+          
+                        if { $random_number_float < [expr {$ratio_value}] } {
+                            pool $dpool_c1
+                        } else {
+                            pool $dpool_c2
+                        }
+                    }
+                    "cookie" {
+                        set cookie_field [class match -value $dpool_c1 equals $::cookie_dg_name]
+                        if { $cookie_field != ""} { #匹配到第一个集群的cookie信息
+                            if {[HTTP::cookie exists $cookie_field] } {
+                                pool $dpool_c1
+                            } else {
+                                pool $dpool_c2
+                            } 
+                        } else { #未匹配到第一个集群的cookie信息，那么就是记录的是集群2的cookie信息
+                            log local0. "running 2"
+                            set cookie_field_2 [class match -value $dpool_c2 equals $::cookie_dg_name]
+                            if {[HTTP::cookie exists $cookie_field_2] } {
+                                pool $dpool_c2
+                            } else {
+                                pool $dpool_c1
+                            }
+                        }
+                    }
+                    "header" {
+                        set value [class match -value $dpool_c1 equals $::header_dg_name]
+                        if { $value != ""} { #匹配到第一个集群的Header信息
+                            set header_field  [ getfield $value ":" 1 ]
+                            set header_value  [ getfield $value ":" 2 ]
+                            if { [HTTP::header $header_field] contains $header_value } {
+                                pool $dpool_c1
+                            } else {
+                                pool $dpool_c2
+                            } 
+                        } else { #未匹配到第一个集群的Header信息，那么就是记录的是集群2的header信息
+                            set value_2 [class match -value $dpool_c2 equals $::header_dg_name]
+                            set header_field  [ getfield $value_2 ":" 1 ]
+                            set header_value  [ getfield $value_2 ":" 2 ]
+                            if { [HTTP::header $header_field] contains $header_value } {
+                                pool $dpool_c2
+                            } else {
+                                pool $dpool_c1
+                            }
+                        }
+                    }
+                }
+            } else {  #按照50，50分发两集群
+                set random_number_float [format %0.2f [expr {rand()}]] 
+                if { $random_number_float < 0.5 } {
+                    pool $dpool_c1
+                } else {
+                    pool $dpool_c2
+                }
+            }
+        } else {  #单集群部署
+            pool $dpool
+        }
+    } 
+}
